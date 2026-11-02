@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luyện thi JLPT N2</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<header>
+  <h1 id="homeLink">🗾 JLPT N2</h1>
+  <button id="userChip" class="user-chip"></button>
+  <nav>
+    <button data-view="home" class="active">Hôm nay</button>
+    <button data-view="vocab">Từ vựng</button>
+    <button data-view="gram">Ngữ pháp</button>
+    <button data-view="exam">Luyện đề</button>
+    <button data-view="read">Đọc hiểu</button>
+    <button data-view="list">Tra từ</button>
+    <button data-view="settings">⚙︎</button>
+  </nav>
+</header>
+
+<main>
+  <!-- HÔM NAY -->
+  <section id="view-home" class="view">
+    <div class="countdown" id="countdown"></div>
+    <div class="cards-row">
+      <div class="stat"><b id="statVocab">0</b><span>từ đã học / <span id="statVocabTotal"></span></span></div>
+      <div class="stat"><b id="statGram">0</b><span>mẫu ngữ pháp / <span id="statGramTotal"></span></span></div>
+      <div class="stat"><b id="statDue">0</b><span>thẻ cần ôn hôm nay</span></div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div class="todo" id="todoBox"></div>
+    <div class="tips">
+      <h3>Cách ôn N2 hiệu quả</h3>
+      <ul>
+        <li><b>Mỗi ngày:</b> 20 từ mới (Mimi Kara) + 5 mẫu ngữ pháp mới, tối bấm <b>Ôn</b> để ôn các thẻ app nhắc (lịch 1 → 3 → 7 → 14 → 30 ngày).</li>
+        <li><b>Mỗi tuần:</b> làm 1–2 đề thật (phần 言語知識) bấm giờ, đọc kỹ giải thích các câu sai; câu sai tự quay lại ở mục “Ôn câu sai”.</li>
+        <li><b>Đọc hiểu:</b> mỗi ngày 1–2 bài; xem phần “🧭 Cách làm bài đọc N2” trong tab Đọc hiểu.</li>
+        <li>Phím tắt khi học thẻ: <kbd>Space</kbd> lật thẻ, <kbd>1</kbd> chưa nhớ, <kbd>2</kbd> nhớ rồi, <kbd>←</kbd><kbd>→</kbd> thẻ trước/sau.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- TỪ VỰNG -->
+  <section id="view-vocab" class="view hidden">
+    <div id="vocabHome">
+      <h3>📗 Từ vựng N2 — Mimi Kara Oboeru (1160 từ)</h3>
+      <p class="muted" id="vocabStats"></p>
+      <div class="combo-grid">
+        <button class="combo-btn" id="vocabNext"><b>📖 Học 20 từ tiếp</b><span id="vocabNextInfo"></span></button>
+        <button class="combo-btn" id="vocabReview"><b>🔁 Ôn từ đến hạn</b><span id="vocabReviewInfo"></span></button>
+        <button class="combo-btn" id="vocabQuizAll"><b>✍️ Quiz từ đã học</b><span>Nghĩa, cách đọc, chữ Hán, điền từ</span></button>
+      </div>
+      <div id="unitGrid" class="unit-grid"></div>
+    </div>
+    <div id="vocabUnit" class="hidden">
+      <div class="lesson-head">
+        <button class="btn small" id="unitBack">◀ Các unit</button>
+        <div><b id="unitTitle"></b><div class="muted" id="unitSub"></div></div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="unitStudy">📖 Học từ mới</button>
+        <button class="btn" id="unitReview">🔁 Ôn cả unit</button>
+        <button class="btn" id="unitQuiz">✍️ Quiz unit</button>
+      </div>
+      <table class="vocab-table"><tbody id="unitList"></tbody></table>
+    </div>
+  </section>
+
+  <!-- NGỮ PHÁP -->
+  <section id="view-gram" class="view hidden">
+    <h3>📘 Ngữ pháp</h3>
+    <div class="read-tabs" id="gramTabs">
+      <button data-lv="N2">N2 — Shinkanzen</button>
+      <button data-lv="N3">Ôn lại N3 (110 mẫu)</button>
+    </div>
+    <p class="muted" id="gramStats"></p>
+    <div class="combo-grid">
+      <button class="combo-btn" id="gramNext"><b>📖 Học 5 mẫu tiếp</b><span id="gramNextInfo"></span></button>
+      <button class="combo-btn" id="gramReview"><b>🔁 Ôn mẫu đến hạn</b><span id="gramReviewInfo"></span></button>
+      <button class="combo-btn" id="gramQuiz"><b>✍️ Quiz ngữ pháp</b><span>Câu hỏi kiểu 文法形式 cho các mẫu đã học</span></button>
+    </div>
+    <input id="gramSearch" placeholder="Tìm mẫu: 〜際に, nghĩa tiếng Việt…">
+    <div id="gramList"></div>
+  </section>
+
+  <!-- THẺ HỌC -->
+  <section id="view-study" class="view hidden">
+    <div class="study-head"><span id="studyTitle"></span><span id="studyCount" class="muted"></span></div>
+    <div class="progress small"><div id="studyBar"></div></div>
+    <div class="review-banner hidden" id="reviewBanner">👀 Đang xem lại thẻ đã học — bấm <b>Sau ▶</b> để quay về thẻ đang học</div>
+    <div id="card" class="card">
+      <div class="card-cat" id="cardCat"></div>
+      <div class="card-front">
+        <div class="jp-big" id="cardWord"></div>
+        <div class="jp-kana" id="cardSub"></div>
+      </div>
+      <div class="card-back hidden" id="cardBack"></div>
+      <button class="speak" id="speakBtn" title="Nghe">🔊</button>
+    </div>
+    <div class="actions" id="flipActions"><button class="btn primary wide" id="flipBtn">Lật thẻ</button></div>
+    <div class="actions hidden" id="gradeActions">
+      <button class="btn bad" id="againBtn">😵 Chưa nhớ <small>(1)</small></button>
+      <button class="btn good" id="goodBtn">😎 Nhớ rồi <small>(2)</small></button>
+    </div>
+    <div class="nav-row">
+      <button class="btn" id="prevBtn">◀ Trước</button>
+      <button class="btn" id="nextBtn">Bỏ qua ▶</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="view-quiz" class="view hidden">
+    <div class="study-head"><span id="quizProgress"></span><span id="quizScore" class="muted"></span></div>
+    <div class="progress small"><div id="quizBar"></div></div>
+    <div class="card quiz-card">
+      <div class="card-cat" id="quizAsk"></div>
+      <div id="quizQ"></div>
+    </div>
+    <div class="choices" id="quizChoices"></div>
+    <div class="quiz-explain hidden" id="quizExplain"></div>
+    <div class="actions"><button class="btn primary wide hidden" id="quizNext">Câu tiếp ▶</button></div>
+    <div id="quizDone" class="hidden"></div>
+  </section>
+
+  <!-- LUYỆN ĐỀ -->
+  <section id="view-exam" class="view hidden">
+    <div id="examSetup">
+      <h3>🎯 Luyện đề 言語知識（文字・語彙・文法）</h3>
+      <p class="muted">Đề thật JLPT N2 2010–2025 và đề thi thử. Câu làm sai quay lại sau 1 → 3 → 7 → 14 ngày cho tới khi nhớ. Phần đọc hiểu nằm ở tab <b>Đọc hiểu</b>.</p>
+      <div class="combo-grid">
+        <button class="combo-btn" id="mixToday"><b>🔀 Đề trộn tổng hợp</b><span id="mixTodayInfo"></span></button>
+        <button class="combo-btn" id="reviewWrong"><b>🔁 Ôn câu sai / đến hạn</b><span id="reviewWrongInfo"></span></button>
+      </div>
+      <div class="inline-row"><span>Số câu đề trộn</span>
+        <select id="mixNum" style="width:auto;display:inline-block;margin:0"><option>20</option><option selected>30</option><option>50</option></select></div>
+      <h4>🗂 Đề thi thật JLPT N2 — làm nguyên phần 言語知識 (問題1–9)</h4>
+      <div id="pastExams" class="book-grid"></div>
+      <h4>📝 Đề thi thử</h4>
+      <div id="mockExams" class="book-grid"></div>
+      <hr>
+      <h3>📚 Luyện theo từng dạng</h3>
+      <div class="mondai-tabs" id="typeTabs"></div>
+      <h3 id="examTitle"></h3>
+      <p class="muted" id="examDesc"></p>
+      <div id="typeExams" class="book-grid"></div>
+      <div class="inline-row">
+        <span>Trộn ngẫu nhiên</span>
+        <input type="number" id="typeMixNum" value="20" min="5" step="1">
+        <span>câu dạng này từ mọi đề</span>
+        <button class="btn" id="typeMixStart">Làm</button>
+      </div>
+      <div id="examHistory"></div>
+    </div>
+    <div id="examResult" class="hidden"></div>
+    <div id="examPaper" class="hidden">
+      <div class="exam-head"><b id="examName"></b><span id="examTimer">00:00</span><button class="btn" id="examQuit">✕</button></div>
+      <label class="check"><input type="checkbox" id="examFuri"> Hiện furigana in sẵn</label>
+      <div id="examQs"></div>
+      <button class="btn primary wide" id="examSubmit">Nộp bài</button>
+    </div>
+  </section>
+
+  <!-- ĐỌC HIỂU -->
+  <section id="view-read" class="view hidden">
+    <div id="readHome">
+      <h3>📖 Đọc hiểu 読解 — đề JLPT N2</h3>
+      <p class="muted" id="readStats"></p>
+      <div class="combo-grid">
+        <button class="combo-btn" id="readNext"><b>▶ Bài tiếp theo</b><span id="readNextInfo"></span></button>
+        <button class="combo-btn" id="readRetry"><b>🔁 Làm lại bài sai</b><span id="readRetryInfo"></span></button>
+        <button class="combo-btn" id="readGuideBtn"><b>🧭 Cách làm bài đọc N2</b><span>Đọc trước khi làm bài đầu tiên</span></button>
+      </div>
+      <div id="readGuide" class="read-guide hidden"></div>
+      <div class="read-tabs" id="readTabs">
+        <button data-p="0">Tất cả</button>
+        <button data-p="10">問題10 短文</button>
+        <button data-p="11">問題11 中文</button>
+        <button data-p="12">問題12 統合</button>
+        <button data-p="13">問題13 長文</button>
+        <button data-p="14">問題14 情報</button>
+      </div>
+      <p class="muted" id="readTabDesc"></p>
+      <div id="readList"></div>
+    </div>
+    <div id="readRun" class="hidden">
+      <div class="exam-head"><b id="readName"></b><span id="readTimer">00:00</span><button class="btn" id="readQuit">✕</button></div>
+      <div class="read-tools">
+        <label class="check"><input type="checkbox" id="readFuri"> Furigana hỗ trợ</label>
+        <button class="btn small" id="readSpeak">🔊 Nghe bài</button>
+        <button class="btn small" id="readTipBtn">💡 Gợi ý cách làm</button>
+      </div>
+      <div class="read-tip hidden" id="readTip"></div>
+      <p class="exam-instr" id="readInstr"></p>
+      <div id="readBody"></div>
+      <div id="readQs"></div>
+      <button class="btn primary wide" id="readSubmit">Nộp bài</button>
+      <div id="readAfter" class="hidden"></div>
+    </div>
+  </section>
+
+  <!-- TRA TỪ -->
+  <section id="view-list" class="view hidden">
+    <div class="list-tools">
+      <input id="search" placeholder="Tìm: kana, chữ Hán, nghĩa, Hán Việt…">
+      <select id="listUnit"></select>
+      <select id="listFilter">
+        <option value="all">Tất cả</option><option value="new">Chưa học</option>
+        <option value="seen">Đã học</option><option value="weak">Hay sai</option>
+      </select>
+    </div>
+    <p class="muted" id="listCount"></p>
+    <table class="vocab-table"><tbody id="listBody"></tbody></table>
+  </section>
+
+  <!-- CÀI ĐẶT -->
+  <section id="view-settings" class="view hidden">
+    <h3>Cài đặt</h3>
+    <label>Ngày thi <input type="date" id="setExam"></label>
+    <label>Mặt trước thẻ từ vựng
+      <select id="setFront">
+        <option value="kanji">Chữ Hán (luyện đọc chữ Hán — giống đề N2)</option>
+        <option value="kana">Hiragana</option>
+      </select>
+    </label>
+    <label>Số từ mới mỗi lượt <select id="setBatch"><option>10</option><option selected>20</option><option>30</option></select></label>
+    <label class="check"><input type="checkbox" id="setAutoSpeak"> Tự đọc phát âm khi lật thẻ</label>
+    <button class="btn primary" id="saveSettings">Lưu</button>
+    <hr>
+    <h3>👤 Đồng bộ giữa các máy</h3>
+    <p class="muted" id="syncNote"></p>
+    <div class="sync-row">
+      <input id="syncUser" placeholder="username, vd: nhuy-n2" autocapitalize="none" autocomplete="username">
+      <button class="btn primary" id="syncLogin">Đồng bộ</button>
+      <button class="btn" id="syncLogout">Thoát</button>
+    </div>
+    <p class="muted" id="syncStatus"></p>
+    <hr>
+    <h3>Sao lưu bằng file</h3>
+    <button class="btn" id="exportBtn">Xuất file tiến độ</button>
+    <label class="btn file-btn">Nhập file tiến độ<input type="file" id="importFile" accept=".json" hidden></label>
+    <hr>
+    <button class="btn bad" id="resetBtn">Xoá toàn bộ tiến độ</button>
+  </section>
+</main>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="data.js?v=1"></script>
+<script src="app.js?v=1"></script>
+<script src="reading.js?v=1"></script>
+<script src="sync-config.js?v=1"></script>
+<script src="sync.js?v=1"></script>
+</body>
+</html>
